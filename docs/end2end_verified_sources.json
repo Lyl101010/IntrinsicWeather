@@ -1,0 +1,219 @@
+{
+  "verified_date": "2026-10-12",
+  "scope": "One real RGB-to-five-AOV-to-weather Gradio task, not a benchmark",
+  "configuration": {
+    "input": "assets/examples/image/1.png",
+    "original_size": [
+      1024,
+      1024
+    ],
+    "inference_size": [
+      512,
+      512
+    ],
+    "prompt": "A rainy day.",
+    "seed": 42,
+    "steps": 50,
+    "guidance_scale": 6.0,
+    "image_guidance_scale": 1.5,
+    "inverse_guidance_scale": 0,
+    "inverse_image_guidance_scale": 0,
+    "irradiance_condition": null
+  },
+  "environment": {
+    "python": "3.12.11",
+    "gradio": "5.44.1",
+    "torch": "2.7.1+cu128",
+    "diffusers": "0.35.1",
+    "psutil": "7.2.2",
+    "gpu": "NVIDIA A10",
+    "vram_MiB": 23028
+  },
+  "validation": {
+    "new_light_tests_passed": 21,
+    "linux_supervision_regressions_passed": 17,
+    "live_mock_http_upload_stream_download_cancel": true,
+    "real_gpu_tasks": 1,
+    "automatic_retries": 0,
+    "intermediate_before_final": true,
+    "workers_sequentially_exited": true,
+    "gpu_after_MiB": 0
+  },
+  "result": {
+    "client_elapsed_seconds": 410.15787186500006,
+    "inverse_seconds": 206.75137943599998,
+    "forward_seconds": 199.36226483999997,
+    "inverse_gpu_sample_peak_MiB": 18501,
+    "forward_gpu_sample_peak_MiB": 16659
+  },
+  "fingerprints_note": "Raw bytes match the successful server deployment; LF-normalized hashes allow Git line-ending conversion.",
+  "sources": [
+    {
+      "file": "IMAA.py",
+      "sha256_raw_bytes": "116e45e4ab278c3f26133c6d39d61695f435789a2c632aa1c72ff96f144e6773",
+      "sha256_lf_normalized": "02aac2c07ba9cb68a0d46e6a0f35fd12268c6b4bf561d0cbd2e8e169344c987a"
+    },
+    {
+      "file": "custom_model/atten_processor.py",
+      "sha256_raw_bytes": "f49a83128ccaff746df9d7321cf4ec4b72fb9278afedbdc053ca278465c54df1",
+      "sha256_lf_normalized": "b7216060673dc055ae96578ade43c1ce76f583974b68b478b9fe583e03428bd9"
+    },
+    {
+      "file": "custom_model/attention.py",
+      "sha256_raw_bytes": "28d6a21f782c88d2833a4dc18bd9b06441abdb887775b8a2dbebe16f410fadcc",
+      "sha256_lf_normalized": "6378aa33aa738b54a817c57c8477b9f65056cde6a34b7fbc82a154bff9d722d9"
+    },
+    {
+      "file": "custom_model/discriminator.py",
+      "sha256_raw_bytes": "ef172c2ca45e9b8079f7ac5a8b47b4b97cbc77f2d4ba076654a3d8d376077b00",
+      "sha256_lf_normalized": "cf28594d3dc8bf9052555269db68f2cda0a99e9af9142bc128c5fd95769a5fcd"
+    },
+    {
+      "file": "custom_model/transformer.py",
+      "sha256_raw_bytes": "865e0759151c68767c13db92ec874da5b46045672fe2331a0d4921256cba3ff3",
+      "sha256_lf_normalized": "ba229329031d97897572c637ea5a69ae620a09eb176ded75f343b87e06a49e9c"
+    },
+    {
+      "file": "data/WeatherSynthetic.py",
+      "sha256_raw_bytes": "68dfd0dfc2fd1224471d3da70ff6cf27a9697c7abb9a67dd480b7674eefa93c9",
+      "sha256_lf_normalized": "e818f6d99994c4294623759db1794f5365e0a71d2cd4b11d29186d26740d0cc2"
+    },
+    {
+      "file": "data/__init__.py",
+      "sha256_raw_bytes": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256_lf_normalized": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "data/latent_datasets.py",
+      "sha256_raw_bytes": "5d606857df1c3c4fa742433c9ac0e876e8a039724fb316c55fed8df2ffa263c8",
+      "sha256_lf_normalized": "69497a798a4f4618f64bd596d6384dfad76525e83ad91fc633d206f712fb6f6b"
+    },
+    {
+      "file": "data/load_image.py",
+      "sha256_raw_bytes": "7e890f972171c3ae2de72f1ee76f3ff9b78d884ff66f4faf1cbfe320fd5a62d0",
+      "sha256_lf_normalized": "d94e0cb9776738cafaa5339a087f3c4bee29ca30d9edd4be241befb626f3fdf5"
+    },
+    {
+      "file": "end2end/__init__.py",
+      "sha256_raw_bytes": "4c508a5a3922767966cc8aa331882a87f20c78c8325e26ebfc0de8d4f398ab99",
+      "sha256_lf_normalized": "4c508a5a3922767966cc8aa331882a87f20c78c8325e26ebfc0de8d4f398ab99"
+    },
+    {
+      "file": "end2end/adapters.py",
+      "sha256_raw_bytes": "a9829a2549267bfa20daf19cd4417117f531dfa9474061d93caf38aff56b0a1e",
+      "sha256_lf_normalized": "a9829a2549267bfa20daf19cd4417117f531dfa9474061d93caf38aff56b0a1e"
+    },
+    {
+      "file": "end2end/contracts.py",
+      "sha256_raw_bytes": "13a1251e59f7c7a6f3940434bf6495637aa315d53dfaedc5914725bf807813c2",
+      "sha256_lf_normalized": "13a1251e59f7c7a6f3940434bf6495637aa315d53dfaedc5914725bf807813c2"
+    },
+    {
+      "file": "end2end/controller.py",
+      "sha256_raw_bytes": "b639c3580c69d096938994650ba1e8a5b30c1fc4a3746489b0216805876947e2",
+      "sha256_lf_normalized": "b639c3580c69d096938994650ba1e8a5b30c1fc4a3746489b0216805876947e2"
+    },
+    {
+      "file": "extract_dino_feature.py",
+      "sha256_raw_bytes": "3fa780529bdccbdbc48292b42ad60a502b0fdb9735346816b223ee1c2862d04b",
+      "sha256_lf_normalized": "79a2a677f4075bffaf131faef08cf0f57098d300af59a7376c81f1f18721d34a"
+    },
+    {
+      "file": "forward_renderer_pipeline.py",
+      "sha256_raw_bytes": "c48c13dbd9b89cd4fecb2a8cbde2a2961ee1a1ad13d1d23481d5a01ae7538665",
+      "sha256_lf_normalized": "dec63d88694fbc4cf90d6a211813d582ed8cfd760c475aeb3193024b6729aa28"
+    },
+    {
+      "file": "gradio_end2end_demo.py",
+      "sha256_raw_bytes": "2f5fbd6b305b8f5350413dd554913ba7a7858288b873bf6e84cdae2a7c47b530",
+      "sha256_lf_normalized": "2f5fbd6b305b8f5350413dd554913ba7a7858288b873bf6e84cdae2a7c47b530"
+    },
+    {
+      "file": "gradio_forward_demo.py",
+      "sha256_raw_bytes": "f02d0adcc1810c48ac2008fe150de3660b3a7209d74502be22b6479f47b872eb",
+      "sha256_lf_normalized": "dac41c25124167a2cafd1e401266f0cbe335114571e82f081c971b1b32d973c0"
+    },
+    {
+      "file": "gradio_inverse_demo.py",
+      "sha256_raw_bytes": "f043cfdad7cd57d88ef93cb995c6f31794a5c64c49349b5ff8917575c94bf6ca",
+      "sha256_lf_normalized": "d3b9800d4fd5e114d55fdbb7e2923f78520b6a3eadaaa54caaaf35a06ebbdffb"
+    },
+    {
+      "file": "inverse_renderer_pipeline.py",
+      "sha256_raw_bytes": "a1b58a37b2728260fefa311d448da28b309cbdd08e80503cc66a5d67f82e8762",
+      "sha256_lf_normalized": "49935a3ea3dbbcb3deceb3346a513e88bcf44401f41cf1e3763aaecdd96905df"
+    },
+    {
+      "file": "scripts/end2end_stage.py",
+      "sha256_raw_bytes": "7a02ccc649d0c7c1a7ee6e2d3b46e6e4942b51b116c8a17bcd1fd19b6493b21f",
+      "sha256_lf_normalized": "7a02ccc649d0c7c1a7ee6e2d3b46e6e4942b51b116c8a17bcd1fd19b6493b21f"
+    },
+    {
+      "file": "scripts/forward_minimal_once.py",
+      "sha256_raw_bytes": "c807bd0321f50f1edf39c40d4b51524e8faea78e8facf3c4b98420a5ebccb1f7",
+      "sha256_lf_normalized": "3c9a5d805fee7e8d9d044bac317601e4fb085ff419a8c76f906c0739173ea8e0"
+    },
+    {
+      "file": "scripts/forward_minimal_supervisor.py",
+      "sha256_raw_bytes": "9285b47ac7c9eece606a86b5d821aa9a566aa08143855665941a765a571620ee",
+      "sha256_lf_normalized": "f4d1c17cb4249d607d9706b8479cee0834ea79375e11af9ae6628d4d72a50140"
+    },
+    {
+      "file": "scripts/forward_result_viewer.py",
+      "sha256_raw_bytes": "2c31bc449b384f995bc47414349ccbee8f3c027498ae266d4ba744e54afcb213",
+      "sha256_lf_normalized": "2c31bc449b384f995bc47414349ccbee8f3c027498ae266d4ba744e54afcb213"
+    },
+    {
+      "file": "scripts/inverse_minimal_once.py",
+      "sha256_raw_bytes": "db7673a7e518925c70bb0fa9b891c414ef8cbad170b6f1c23f29d5ef800bc167",
+      "sha256_lf_normalized": "db7673a7e518925c70bb0fa9b891c414ef8cbad170b6f1c23f29d5ef800bc167"
+    },
+    {
+      "file": "scripts/inverse_minimal_supervisor.py",
+      "sha256_raw_bytes": "fe8d96e173b370489599bb801bd49f0a7872d5c28fd7e09035a7e8c10ab2807a",
+      "sha256_lf_normalized": "fe8d96e173b370489599bb801bd49f0a7872d5c28fd7e09035a7e8c10ab2807a"
+    },
+    {
+      "file": "scripts/prepare_weather_synthetic_latents.py",
+      "sha256_raw_bytes": "49cc0c2acb13a8cbbc9d79bfd2e3d0d9ebcfa26fb0730ad8555b2a62ae1b4ba0",
+      "sha256_lf_normalized": "d5eca78fb377610714aad31de71259032c1f325f79c8127de810bcf9abaca7f3"
+    },
+    {
+      "file": "test_inverse.py",
+      "sha256_raw_bytes": "d86b1c5f647c3621d739cfb07e2d47e95d894639cbd9a4cf5023305abeebf519",
+      "sha256_lf_normalized": "54dc74d73d7f49487470969310524721dfc1424b1ba4367f561581916c1f7509"
+    },
+    {
+      "file": "tests/test_end2end_adapters.py",
+      "sha256_raw_bytes": "11175eb9e6748d950358ad646f17df7a7d28fdb31d7848b27b7e4c5590935364",
+      "sha256_lf_normalized": "11175eb9e6748d950358ad646f17df7a7d28fdb31d7848b27b7e4c5590935364"
+    },
+    {
+      "file": "tests/test_end2end_light.py",
+      "sha256_raw_bytes": "891df8171776f0572116e9cacbe17e15f4af94876dbde90bcedb95c7b5fb046d",
+      "sha256_lf_normalized": "891df8171776f0572116e9cacbe17e15f4af94876dbde90bcedb95c7b5fb046d"
+    },
+    {
+      "file": "tests/test_end2end_supervision.py",
+      "sha256_raw_bytes": "eae49be2827558df4ee5f759dbc473f99d60ec249d98926537fe32fe464eb772",
+      "sha256_lf_normalized": "eae49be2827558df4ee5f759dbc473f99d60ec249d98926537fe32fe464eb772"
+    },
+    {
+      "file": "tests/test_forward_loading_and_supervisor.py",
+      "sha256_raw_bytes": "9390c918398437cb312de87a9f0a176627588cd79d0b9fdea21a81ff93f01ca0",
+      "sha256_lf_normalized": "9390c918398437cb312de87a9f0a176627588cd79d0b9fdea21a81ff93f01ca0"
+    },
+    {
+      "file": "tests/test_inverse_loading_light.py",
+      "sha256_raw_bytes": "cde512bd1c034ab339288b56242d49f1c97d51d5fbece3a52efc4f296b5d5070",
+      "sha256_lf_normalized": "cde512bd1c034ab339288b56242d49f1c97d51d5fbece3a52efc4f296b5d5070"
+    },
+    {
+      "file": "tests/test_inverse_worker_light.py",
+      "sha256_raw_bytes": "f92aa67b08598f7919c87990a28a8939523731d56809c575716033cef613d2a0",
+      "sha256_lf_normalized": "f92aa67b08598f7919c87990a28a8939523731d56809c575716033cef613d2a0"
+    }
+  ],
+  "raw_evidence_in_git": false,
+  "weights_in_git": false
+}

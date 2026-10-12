@@ -23,9 +23,33 @@
 
 ---
 
-## Fork milestone: separately verified pretrained inference
+## Fork milestone: unified end-to-end Gradio
 
-This fork preserves the [original IntrinsicWeather implementation](https://github.com/YixinZhu042/IntrinsicWeather) and adds memory-conscious loading and supervised single-example inference. On 2026-10-11, both renderers completed real GPU inference separately on Ubuntu 22.04.5, an NVIDIA A10 (23028 MiB VRAM), and approximately 28 GiB system RAM. No training or joint inverse-to-forward experiment was performed.
+On 2026-10-12, this fork completed one real **RGB → InverseRenderer-512 → ForwardRenderer** task through Gradio 5.44.1 on an NVIDIA A10. The uploaded original RGB photograph was decomposed into Albedo, Normal, Roughness, Metallic and Irradiance; the five maps were streamed before the single final weather image and downloadable experiment ZIP. This is a verified single-example integration, not a night-road benchmark or general quality guarantee.
+
+Run from the repository root in the existing verified Linux environment with the local weights below. Do not start a second service if port 7861 is already occupied by the current demo.
+
+```bash
+# CPU synthetic workflow; explicitly labelled MOCK. This is also the default mode.
+python -B -u gradio_end2end_demo.py --mock
+
+# Real mode: GPU loading starts only when Generate is clicked.
+python -B -u gradio_end2end_demo.py --allow-real-models --results-root outputs/end2end
+```
+
+Both modes listen on **127.0.0.1:7861**, with **share=False**. Forward remote port 7861 through VS Code Remote-SSH's Ports panel, then use its displayed local address in the Windows browser. The page provides one upload, a task-specific original preview, Generate/Cancel, five intrinsic maps, one final image, prompt/seed/steps/guidance controls, stage/elapsed-time/errors and JSON/ZIP downloads. Defaults are `A rainy day.`, seed 42, 50 steps, Forward guidance 6.0 and image guidance 1.5; inverse guidance remains 0/0.
+
+The UI does not keep CUDA models resident. Inverse and Forward use separate supervised worker processes; Inverse must exit and cleanup must pass before Forward is created. Unique task manifests and hashes prevent mixing outputs. Official 512 preprocessing and raw float arrays are retained; official PNG conversion feeds the original Forward loader (RGB, NCHW, [-1,1], CUDA FP16). Albedo/Normal/Roughness/Metallic condition Forward; Irradiance is saved/displayed but remains `None` in its pipeline. The 96-channel transformer is unchanged.
+
+Each stage keeps the 1200 s timeout, 4 GiB available-RAM floor, 22 GiB worker-RSS ceiling, zero automatic retries and owned-process-tree cleanup. A single Gradio concurrency group, repeat-click restriction, process mutex and OS lock serialize GPU tasks. GPU query exceptions are isolated; each real worker rejects other GPU compute processes. Cancel and session disconnect request bounded cleanup. Gradio 5.44.1 `allowed_paths` is limited to the configured result root, and its unload callback returns no outputs.
+
+The successful task used `assets/examples/image/1.png` (original 1024×1024, official 512 preprocessing) and the default rainy-day parameters. The page generated the result in approximately 407.6 s; client observation including transfers was 410.158 s. Inverse/Forward supervision took 206.751/199.362 s, with sampled GPU peaks of 18501/16659 MiB. Both workers exited normally, no stage process remained, and GPU usage returned to 0 MiB. The verified environment passed 21 new lightweight tests and 17 existing Linux supervision regressions; live HTTP mock upload, intermediate streaming, downloads and cancellation also passed. No training or automatic GPU retry was performed.
+
+See [the unified demo guide](docs/end2end_gradio.md), [verified source fingerprints](docs/end2end_verified_sources.json) and [proposed real night-road test](docs/night_road_test_plan.md). Only the rainy-day official example has completed the joint chain; real night-road inputs, `A rainy night.`, batches and repeated-run stability remain unvalidated. Raw arrays are postprocessed image outputs, not calibrated physical properties. Native Windows real GPU supervision is unsupported. Weights, generated outputs, private inputs, server logs and machine-specific reports are excluded from Git.
+
+## Previous fork milestone: separately verified pretrained inference
+
+This fork preserves the [original IntrinsicWeather implementation](https://github.com/YixinZhu042/IntrinsicWeather) and adds memory-conscious loading and supervised single-example inference. On 2026-10-11, both renderers completed real GPU inference separately on Ubuntu 22.04.5, an NVIDIA A10 (23028 MiB VRAM), and approximately 28 GiB system RAM. No training or joint inverse-to-forward experiment was performed at that earlier milestone; the later unified milestone is documented above.
 
 | Module | Successful run | Official example and configuration | Observed result |
 | --- | --- | --- | --- |
@@ -77,7 +101,7 @@ Each supervisor permits one attempt with zero automatic retries, a 1200 s deadli
 
 CPU/tiny/mock regression tests are available in `tests/test_forward_loading_and_supervisor.py`, `tests/test_inverse_loading_light.py`, and `tests/test_inverse_worker_light.py`. On Linux with the tested dependencies, run each test file directly with `CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1 python -B tests/<test_file>.py`. These tests exercise tiny fixtures and mocked APIs; they do not load the full pretrained models.
 
-Known limits: only the two separate 512×512 official examples have been validated. There is no benchmark, training validation, reference-output agreement, real-night-road quality result, or completed inverse-to-forward chain. Inverse outputs are normalized pipeline image arrays, not calibrated physical measurements. Official DINO signed-input clipping and the deprecated `[-1,1]` image-tensor convention remain unchanged; `torch_dtype`, tokenizer conversion, and slow-image-processor warnings are recorded. FP16 and uint8 visualization can affect precision. Device sampling may miss brief VRAM peaks; RAM/VRAM requirements are measurements for these runs, not guarantees for other inputs or versions.
+Limits of the earlier separate milestone: it validated two 512×512 official examples, without a joint chain. The later unified rainy-day task adds one successful chain, but there is still no benchmark, training validation, reference-output agreement or real-night-road quality result. Inverse outputs are normalized pipeline image arrays, not calibrated physical measurements. Official DINO signed-input clipping and the deprecated `[-1,1]` image-tensor convention remain unchanged; `torch_dtype`, tokenizer conversion, and slow-image-processor warnings are recorded. FP16 and uint8 visualization can affect precision. Device sampling may miss brief VRAM peaks; RAM/VRAM requirements are measurements for these runs, not guarantees for other inputs or versions.
 
 The remaining sections retain the upstream dataset, training, and interactive-demo instructions. Those workflows are outside this fork's validated milestone.
 
@@ -370,6 +394,8 @@ We thank the authors of the following projects:
 ## Attribution and license status
 
 The paper, authors, project page, acknowledgements, and file-level copyright/license notices are retained from the original repository. At the inspected upstream commit `94c4ae3439b4b1146b6f4524073dda2697f3fb18`, no repository-wide LICENSE, COPYING, or NOTICE file was present. Some files contain Apache-2.0 notices; these do not establish a license for the entire repository or for the model weights. This fork does not assign a new license to upstream material. Check upstream permission and the separate model terms before redistribution or commercial use.
+
+The [InverseRenderer-512](https://huggingface.co/GilgameshYX/InverseRenderer-512), [ForwardRenderer](https://huggingface.co/GilgameshYX/ForwardRenderer) and [DINOv2-base](https://huggingface.co/facebook/dinov2-base) model cards list Apache-2.0. [SD3.5 Medium](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) has separate Stability AI community terms and gated access conditions. This metadata does not grant a new repository-wide license or replace the actual terms for each pinned artifact. The unified-demo commit includes no weights.
 
 The original project provides this citation in `docs/index.html`:
 

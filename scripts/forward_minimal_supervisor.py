@@ -211,7 +211,8 @@ class OwnedWorkers:
 class StopRequested(BaseException):
     pass
 
-def supervise(command, output_dir, policy=Policy(), gpu_query=None, memory_reader=None):
+def supervise(command, output_dir, policy=Policy(), gpu_query=None, memory_reader=None,
+              cancel_requested=None):
     out = Path(output_dir).resolve()
     out.mkdir(parents=True, exist_ok=True)
     if any(out.iterdir()):
@@ -233,6 +234,8 @@ def supervise(command, output_dir, policy=Policy(), gpu_query=None, memory_reade
         with (out / "full.log").open("x", encoding="utf-8") as log, (out / "resource_samples.csv").open("x", newline="", encoding="utf-8") as stream:
             samples = csv.writer(stream)
             samples.writerow(["elapsed_seconds", "worker_rss_bytes", "system_available_ram_bytes", "gpu_used_MiB", "gpu_sample_age_seconds", "gpu_query_errors"])
+            if cancel_requested is not None and cancel_requested():
+                raise StopRequested("cancel_requested")
             if memory_reader is None and psutil.virtual_memory().available < policy.min_available_bytes:
                 record["status"] = "preflight_memory_guard"
                 raise StopRequested("preflight_memory_guard")
@@ -248,6 +251,8 @@ def supervise(command, output_dir, policy=Policy(), gpu_query=None, memory_reade
             while True:
                 elapsed = time.monotonic() - started
                 owner.refresh(worker, sampler.excluded())
+                if cancel_requested is not None and cancel_requested():
+                    raise StopRequested("cancel_requested")
                 code = worker.poll()
                 if code is not None:
                     record.update(worker_exit_code=code, status="completed" if code == 0 else "worker_failed")
