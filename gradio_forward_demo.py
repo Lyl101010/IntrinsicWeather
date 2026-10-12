@@ -14,9 +14,11 @@ Env overrides: SD3_PATH, FORWARD_TRANSFORMER_CKPT, FORWARD_LORA_PATH
 from __future__ import annotations
 
 import argparse
+import gc
 import glob
 import os
 import sys
+import zipfile
 from typing import Any
 
 import gradio as gr
@@ -95,7 +97,8 @@ def init_pipeline(args: argparse.Namespace) -> None:
     transformer = SD3Transformer2DModel.from_pretrained(
         args.sd3_path,
         subfolder="transformer",
-        low_cpu_mem_usage=False,
+        torch_dtype=dtype,
+        low_cpu_mem_usage=True,
         device_map=None,
     )
     in_channels = 96
@@ -109,29 +112,44 @@ def init_pipeline(args: argparse.Namespace) -> None:
             transformer.pos_embed.proj.kernel_size,
             transformer.pos_embed.proj.stride,
             transformer.pos_embed.proj.padding,
+            device=transformer.pos_embed.proj.weight.device,
+            dtype=transformer.pos_embed.proj.weight.dtype,
         )
         new_proj.weight.zero_()
         new_proj.weight[:, :16, :, :].copy_(transformer.pos_embed.proj.weight)
         transformer.pos_embed.proj = new_proj
 
     print(f"Loading transformer weights from {args.transformer_ckpt} ...")
+    # The pinned checkpoint was verified as ZIP serialization with 909 FP32 tensors.
+    # mmap avoids eagerly copying its full 9.2 GiB storage into anonymous CPU RAM.
+    if not zipfile.is_zipfile(args.transformer_ckpt):
+        raise ValueError("ForwardRenderer checkpoint must use verified ZIP serialization for mmap.")
+    sd = torch.load(args.transformer_ckpt, map_location="cpu", weights_only=True, mmap=True)
     try:
-        sd = torch.load(args.transformer_ckpt, map_location="cpu", weights_only=True)
-    except TypeError:
-        sd = torch.load(args.transformer_ckpt, map_location="cpu")
-    transformer.load_state_dict(sd)
+        transformer.load_state_dict(sd, strict=True)
+    finally:
+        # load_state_dict copies into model-owned parameters (assign=False by default).
+        # Never keep the mapped FP32 checkpoint alive while loading the text encoders.
+        del sd
+        gc.collect()
     transformer.eval()
-    transformer = transformer.to(device)
+    transformer = transformer.to(device=device, dtype=dtype)
 
     print("Building pipeline ...")
     pipe = StableDiffusion3InstructPix2PixPipeline.from_pretrained(
         args.sd3_path,
         transformer=transformer,
         use_safetensors=True,
+        torch_dtype=dtype,
+        low_cpu_mem_usage=True,
     ).to(device, dtype=dtype)
 
     print(f"Loading LoRA from {args.lora_path} ...")
-    pipe.load_lora_weights(args.lora_path)
+    pipe.load_lora_weights(
+        os.path.dirname(os.path.abspath(args.lora_path)),
+        weight_name="pytorch_lora_weights.safetensors",
+        local_files_only=True,
+    )
 
     _GLOBAL.clear()
     _GLOBAL.update(
@@ -231,7 +249,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--maps_dir", type=str, default=None, help="Folder with *_{albedo,normal,...}.png examples")
     p.add_argument("--im_size", type=int, default=512)
     p.add_argument("--device", type=str, default="cuda")
-    p.add_argument("--host", type=str, default="0.0.0.0")
+    p.add_argument("--host", type=str, default="127.0.0.1")
     p.add_argument("--port", type=int, default=7861)
     p.add_argument("--share", action="store_true")
     p.add_argument("--num_inference_steps", type=int, default=50)

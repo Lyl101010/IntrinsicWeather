@@ -1,0 +1,256 @@
+{
+  "verified_date": "2026-10-11",
+  "base_git_commit": "94c4ae3439b4b1146b6f4524073dda2697f3fb18",
+  "scope": "Two separately completed 512x512 official pretrained examples; no joint pipeline or benchmark",
+  "source_files": [
+    {
+      "file": "gradio_forward_demo.py",
+      "local_sha256": "f02d0adcc1810c48ac2008fe150de3660b3a7209d74502be22b6479f47b872eb",
+      "remote_sha256": "f02d0adcc1810c48ac2008fe150de3660b3a7209d74502be22b6479f47b872eb",
+      "local_lf_normalized_sha256": "dac41c25124167a2cafd1e401266f0cbe335114571e82f081c971b1b32d973c0",
+      "difference": "none"
+    },
+    {
+      "file": "scripts/forward_minimal_once.py",
+      "local_sha256": "c807bd0321f50f1edf39c40d4b51524e8faea78e8facf3c4b98420a5ebccb1f7",
+      "remote_sha256": "c807bd0321f50f1edf39c40d4b51524e8faea78e8facf3c4b98420a5ebccb1f7",
+      "local_lf_normalized_sha256": "3c9a5d805fee7e8d9d044bac317601e4fb085ff419a8c76f906c0739173ea8e0",
+      "difference": "none"
+    },
+    {
+      "file": "scripts/forward_minimal_supervisor.py",
+      "local_sha256": "0af60803d51ee98e40ce921988590006b5faf7896470a7e5c4858828df2f9c43",
+      "remote_sha256": "0af60803d51ee98e40ce921988590006b5faf7896470a7e5c4858828df2f9c43",
+      "local_lf_normalized_sha256": "47be7018d39693e62804f439109356966ef2de6c24520107147716c93d7ac0dc",
+      "difference": "none"
+    },
+    {
+      "file": "scripts/forward_result_viewer.py",
+      "local_sha256": "2c31bc449b384f995bc47414349ccbee8f3c027498ae266d4ba744e54afcb213",
+      "remote_sha256": "2c31bc449b384f995bc47414349ccbee8f3c027498ae266d4ba744e54afcb213",
+      "local_lf_normalized_sha256": "2c31bc449b384f995bc47414349ccbee8f3c027498ae266d4ba744e54afcb213",
+      "difference": "none"
+    },
+    {
+      "file": "gradio_inverse_demo.py",
+      "local_sha256": "f043cfdad7cd57d88ef93cb995c6f31794a5c64c49349b5ff8917575c94bf6ca",
+      "remote_sha256": "f043cfdad7cd57d88ef93cb995c6f31794a5c64c49349b5ff8917575c94bf6ca",
+      "local_lf_normalized_sha256": "d3b9800d4fd5e114d55fdbb7e2923f78520b6a3eadaaa54caaaf35a06ebbdffb",
+      "difference": "none"
+    },
+    {
+      "file": "scripts/inverse_minimal_once.py",
+      "local_sha256": "db7673a7e518925c70bb0fa9b891c414ef8cbad170b6f1c23f29d5ef800bc167",
+      "remote_sha256": "db7673a7e518925c70bb0fa9b891c414ef8cbad170b6f1c23f29d5ef800bc167",
+      "local_lf_normalized_sha256": "db7673a7e518925c70bb0fa9b891c414ef8cbad170b6f1c23f29d5ef800bc167",
+      "difference": "none"
+    },
+    {
+      "file": "scripts/inverse_minimal_supervisor.py",
+      "local_sha256": "fe8d96e173b370489599bb801bd49f0a7872d5c28fd7e09035a7e8c10ab2807a",
+      "remote_sha256": "fe8d96e173b370489599bb801bd49f0a7872d5c28fd7e09035a7e8c10ab2807a",
+      "local_lf_normalized_sha256": "fe8d96e173b370489599bb801bd49f0a7872d5c28fd7e09035a7e8c10ab2807a",
+      "difference": "none"
+    },
+    {
+      "file": "forward_renderer_pipeline.py",
+      "local_sha256": "c48c13dbd9b89cd4fecb2a8cbde2a2961ee1a1ad13d1d23481d5a01ae7538665",
+      "remote_sha256": "dec63d88694fbc4cf90d6a211813d582ed8cfd760c475aeb3193024b6729aa28",
+      "local_lf_normalized_sha256": "dec63d88694fbc4cf90d6a211813d582ed8cfd760c475aeb3193024b6729aa28",
+      "difference": "CRLF/LF only"
+    },
+    {
+      "file": "inverse_renderer_pipeline.py",
+      "local_sha256": "a1b58a37b2728260fefa311d448da28b309cbdd08e80503cc66a5d67f82e8762",
+      "remote_sha256": "49935a3ea3dbbcb3deceb3346a513e88bcf44401f41cf1e3763aaecdd96905df",
+      "local_lf_normalized_sha256": "49935a3ea3dbbcb3deceb3346a513e88bcf44401f41cf1e3763aaecdd96905df",
+      "difference": "CRLF/LF only"
+    },
+    {
+      "file": "IMAA.py",
+      "local_sha256": "116e45e4ab278c3f26133c6d39d61695f435789a2c632aa1c72ff96f144e6773",
+      "remote_sha256": "02aac2c07ba9cb68a0d46e6a0f35fd12268c6b4bf561d0cbd2e8e169344c987a",
+      "local_lf_normalized_sha256": "02aac2c07ba9cb68a0d46e6a0f35fd12268c6b4bf561d0cbd2e8e169344c987a",
+      "difference": "CRLF/LF only"
+    },
+    {
+      "file": "extract_dino_feature.py",
+      "local_sha256": "3fa780529bdccbdbc48292b42ad60a502b0fdb9735346816b223ee1c2862d04b",
+      "remote_sha256": "79a2a677f4075bffaf131faef08cf0f57098d300af59a7376c81f1f18721d34a",
+      "local_lf_normalized_sha256": "79a2a677f4075bffaf131faef08cf0f57098d300af59a7376c81f1f18721d34a",
+      "difference": "CRLF/LF only"
+    }
+  ],
+  "models": [
+    {
+      "repo_id": "facebook/dinov2-base",
+      "revision": "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
+      "relative_target": "dinov2_base"
+    },
+    {
+      "repo_id": "GilgameshYX/InverseRenderer-512",
+      "revision": "3eb4e9a712721dd4a2ff23070a6b203b4837490d",
+      "relative_target": "checkpoints/InverseRenderer-512"
+    },
+    {
+      "repo_id": "GilgameshYX/ForwardRenderer",
+      "revision": "0c767208f390e71aebfa6fe9f15ac651deeb2a32",
+      "relative_target": "checkpoints/ForwardRenderer"
+    },
+    {
+      "repo_id": "stabilityai/stable-diffusion-3.5-medium",
+      "revision": "b940f670f0eda2d07fbb75229e779da1ad11eb80",
+      "relative_target": "sd3.5_medium"
+    }
+  ],
+  "environment": {
+    "os": "Ubuntu 22.04.5",
+    "python": "3.12.11",
+    "gpu": "NVIDIA A10",
+    "gpu_total_MiB": 23028,
+    "torch": "2.7.1+cu128",
+    "torchvision": "0.22.1+cu128",
+    "diffusers": "0.35.1",
+    "transformers": "4.56.2",
+    "psutil": "7.2.2"
+  },
+  "forward": {
+    "attempt": "attempt_03",
+    "parameters": {
+      "example": "image_11",
+      "im_size": 512,
+      "prompt": "A rainy day.",
+      "seed": 42,
+      "num_inference_steps": 50,
+      "guidance_scale": 6.0,
+      "image_guidance_scale": 1.5,
+      "irradiance_argument": null,
+      "dtype": "float16 (official CUDA path)"
+    },
+    "resources": {
+      "cpu_maxrss_kernel_bytes": 15667183616,
+      "cpu_rss_peak_bytes": 15419457536,
+      "system_available_ram_min_bytes": 20484198400,
+      "gpu_allocated_peak_bytes": 17058125824,
+      "gpu_reserved_peak_bytes": 17569939456,
+      "model_load_seconds": 102.53847898500044,
+      "inference_seconds": 13.352813012999832
+    },
+    "gpu_device_used_peak_MiB": 16659,
+    "supervisor_seconds": 123.37506318800024,
+    "worker_exit_code": 0,
+    "output_sha256": "bbdb35870c7348114b7459f53828b9325f716d8a4ea5baba149b6ac14e3dbbdf"
+  },
+  "inverse": {
+    "attempt": "inverse_attempt_01",
+    "parameters": {
+      "seed": 42,
+      "im_size": 512,
+      "num_inference_steps_per_aov": 50,
+      "guidance_scale": 0,
+      "image_guidance_scale": 0,
+      "strength": 1.0,
+      "diffusion_dtype": "float16",
+      "dino_dtype": "float32",
+      "imaa_dtype": "float32"
+    },
+    "model_load_seconds": 141.07195342199884,
+    "inference_total_seconds": 22.280345891000252,
+    "supervisor_seconds": 170.36125081499995,
+    "cpu_maxrss_kernel_bytes": 15660367872,
+    "system_available_min_bytes": 20192337920,
+    "gpu_allocated_peak_bytes": 18154476544,
+    "gpu_reserved_peak_bytes": 19088277504,
+    "gpu_device_used_peak_MiB": 18501,
+    "outputs": [
+      {
+        "aov": "albedo",
+        "shape": [
+          512,
+          512,
+          3
+        ],
+        "dtype": "float32",
+        "min": 0.0,
+        "max": 1.0,
+        "variance": 0.04514534426325068,
+        "nan_count": 0,
+        "inf_count": 0,
+        "inference_seconds": 3.6711100119991897,
+        "valid": true,
+        "constant_map": false
+      },
+      {
+        "aov": "normal",
+        "shape": [
+          512,
+          512,
+          3
+        ],
+        "dtype": "float32",
+        "min": 0.0,
+        "max": 1.0,
+        "variance": 0.04649433842024405,
+        "nan_count": 0,
+        "inf_count": 0,
+        "inference_seconds": 3.4898276629992324,
+        "valid": true,
+        "constant_map": false
+      },
+      {
+        "aov": "roughness",
+        "shape": [
+          512,
+          512,
+          3
+        ],
+        "dtype": "float32",
+        "min": 0.0,
+        "max": 0.9599609375,
+        "variance": 0.05390975682272251,
+        "nan_count": 0,
+        "inf_count": 0,
+        "inference_seconds": 3.488592071000312,
+        "valid": true,
+        "constant_map": false
+      },
+      {
+        "aov": "metallic",
+        "shape": [
+          512,
+          512,
+          3
+        ],
+        "dtype": "float32",
+        "min": 0.0,
+        "max": 1.0,
+        "variance": 0.01490909466475763,
+        "nan_count": 0,
+        "inf_count": 0,
+        "inference_seconds": 3.497067780001089,
+        "valid": true,
+        "constant_map": false
+      },
+      {
+        "aov": "irradiance",
+        "shape": [
+          512,
+          512,
+          3
+        ],
+        "dtype": "float32",
+        "min": 0.354248046875,
+        "max": 0.9521484375,
+        "variance": 0.01830900050605085,
+        "nan_count": 0,
+        "inf_count": 0,
+        "inference_seconds": 3.508675876999405,
+        "valid": true,
+        "constant_map": false
+      }
+    ],
+    "worker_exit_code": 0
+  },
+  "gpu_release_verified": true,
+  "raw_evidence_distribution": "Raw logs, generated outputs, deployment backups and private machine paths are retained locally, excluded from this Git milestone. This JSON is a compact result summary, not the original full evidence."
+}

@@ -16,8 +16,11 @@ Environment variables (optional overrides):
 from __future__ import annotations
 
 import argparse
+import gc
+import json
 import os
 import sys
+import zipfile
 from typing import Any
 
 import gradio as gr
@@ -40,10 +43,26 @@ def _env_or(arg: str | None, key: str, default: str) -> str:
 
 
 def _load_torch(path: str, map_location: str | torch.device) -> Any:
-    try:
-        return torch.load(path, map_location=map_location, weights_only=True)
-    except TypeError:
-        return torch.load(path, map_location=map_location)
+    if not zipfile.is_zipfile(path):
+        raise ValueError("Inverse checkpoint must use verified ZIP serialization for mmap.")
+    return torch.load(path, map_location=map_location, weights_only=True, mmap=True)
+
+
+def _validate_shards(ckpt0: str, ckpt1: str, state0: dict, state1: dict) -> None:
+    if os.path.dirname(os.path.abspath(ckpt0)) != os.path.dirname(os.path.abspath(ckpt1)):
+        raise ValueError("Inverse checkpoint shards must share their indexed directory.")
+    index_path = os.path.join(os.path.dirname(os.path.abspath(ckpt0)), "pytorch_model.bin.index.json")
+    with open(index_path, encoding="utf-8") as stream:
+        weight_map = json.load(stream)["weight_map"]
+    if set(state0) & set(state1):
+        raise ValueError("Duplicate keys in inverse checkpoint shards.")
+    filenames = {os.path.basename(ckpt0), os.path.basename(ckpt1)}
+    if len(filenames) != 2 or set(weight_map.values()) != filenames:
+        raise ValueError("Checkpoint index must reference exactly the two supplied shards.")
+    for path, state in ((ckpt0, state0), (ckpt1, state1)):
+        expected = {key for key, filename in weight_map.items() if filename == os.path.basename(path)}
+        if set(state) != expected or not all(torch.is_tensor(value) for value in state.values()):
+            raise ValueError("Checkpoint shard keys/tensors do not match the index: " + path)
 
 
 def build_transformer(
@@ -51,12 +70,15 @@ def build_transformer(
     ckpt0: str,
     ckpt1: str,
     device: torch.device,
+    dtype: torch.dtype = torch.float32,
 ) -> SD3Transformer2DModel:
     transformer = SD3Transformer2DModel.from_pretrained(
         sd3_path,
         subfolder="transformer",
-        low_cpu_mem_usage=False,
+        torch_dtype=dtype,
+        low_cpu_mem_usage=True,
         device_map=None,
+        local_files_only=True,
     )
     in_channels = 32
     out_channels = transformer.pos_embed.proj.out_channels
@@ -69,17 +91,25 @@ def build_transformer(
             transformer.pos_embed.proj.kernel_size,
             transformer.pos_embed.proj.stride,
             transformer.pos_embed.proj.padding,
+            device=transformer.pos_embed.proj.weight.device,
+            dtype=transformer.pos_embed.proj.weight.dtype,
         )
         new_proj.weight.zero_()
         new_proj.weight[:, :16, :, :].copy_(transformer.pos_embed.proj.weight)
         transformer.pos_embed.proj = new_proj
 
-    state_dict0 = _load_torch(ckpt0, map_location="cpu")
-    state_dict1 = _load_torch(ckpt1, map_location="cpu")
-    state_dict = {**state_dict0, **state_dict1}
-    transformer.load_state_dict(state_dict)
+    state_dict0 = state_dict1 = state_dict = None
+    try:
+        state_dict0 = _load_torch(ckpt0, map_location="cpu")
+        state_dict1 = _load_torch(ckpt1, map_location="cpu")
+        _validate_shards(ckpt0, ckpt1, state_dict0, state_dict1)
+        state_dict = {**state_dict0, **state_dict1}
+        transformer.load_state_dict(state_dict, strict=True)
+    finally:
+        del state_dict, state_dict0, state_dict1
+        gc.collect()
     transformer.eval()
-    return transformer.to(device)
+    return transformer.to(device=device, dtype=dtype)
 
 
 def pil_to_model_input(
@@ -207,15 +237,17 @@ def init_models(args: argparse.Namespace) -> None:
         dtype = torch.float16
 
     print(f"Loading SD3 from {args.sd3_path} ...")
-    transformer = build_transformer(args.sd3_path, args.transformer_ckpt0, args.transformer_ckpt1, device)
+    transformer = build_transformer(args.sd3_path, args.transformer_ckpt0, args.transformer_ckpt1, device, dtype)
 
     print(f"Loading IMAA from {args.imaa_path} ...")
+    imaa_dict = _load_torch(args.imaa_path, map_location="cpu")
+    imaa = IMAA(dino_model=None, processor=None, num_maps=5, map_embedding_dim=256, common_dim=128)
     try:
-        imaa_dict = torch.load(args.imaa_path, map_location=device, weights_only=False)
-    except TypeError:
-        imaa_dict = torch.load(args.imaa_path, map_location=device)
-    imaa = IMAA(dino_model=None, processor=None, num_maps=5, map_embedding_dim=256, common_dim=128).to(device)
-    imaa.load_state_dict(imaa_dict["model_state_dict"])
+        imaa.load_state_dict(imaa_dict["model_state_dict"], strict=True)
+    finally:
+        del imaa_dict
+        gc.collect()
+    imaa = imaa.to(device)
     imaa.eval()
 
     print("Building pipeline ...")
@@ -223,11 +255,16 @@ def init_models(args: argparse.Namespace) -> None:
         args.sd3_path,
         transformer=transformer,
         use_safetensors=True,
+        torch_dtype=dtype,
+        low_cpu_mem_usage=True,
+        local_files_only=True,
     ).to(device, dtype=dtype)
 
     print(f"Loading DINO from {args.dino_path} ...")
-    dino_processor = AutoImageProcessor.from_pretrained(args.dino_path)
-    dino_model = AutoModel.from_pretrained(args.dino_path).to(device)
+    dino_processor = AutoImageProcessor.from_pretrained(args.dino_path, local_files_only=True)
+    dino_model = AutoModel.from_pretrained(
+        args.dino_path, torch_dtype=torch.float32, low_cpu_mem_usage=True, local_files_only=True,
+    ).to(device)
     dino_model.eval()
 
     _GLOBAL_BUNDLE = {
